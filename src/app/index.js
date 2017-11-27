@@ -30,14 +30,15 @@
 
 // render(<App />, window.document.getElementById('app'));
 
-import { createStore } from "redux";
 
-const initialState = {
+import { createStore, combineReducers, applyMiddleware } from "redux";
+import { createLogger } from "redux-logger";
+
+const mathReducer = (state = {
     result: 1,
-    lastValues: []
-}
-
-const reducer = (state = initialState, action) => {
+    lastValues: [],
+    username: "MAX"
+}, action) => {
     switch (action.type) {
         case "ADD":
             state = {
@@ -59,23 +60,62 @@ const reducer = (state = initialState, action) => {
     return state;
 };
 
-const store = createStore(reducer);
+const userReducer = (state = {
+    name: "MAX",
+    age: 27
+}, action) => {
+    
+    switch (action.type) {
+        case "SET_NAME":
+            state = {
+                ...state,
+                name: action.payload
+            };
+            break;
+        case "SET_AGE":
+            state = {
+                ...state,
+                age: action.payload
+            };
+            break;
+        default:
+            state = {
+                ...state,
+                age: action.payload
+            }
+    }
+
+    return state;
+};
+
+
+const myLogger = (store) => (next) => (action) => {
+    console.log("LOGGED ACTION: ", action);
+    next(action);
+}
+
+const store = createStore(combineReducers({ mathReducer, userReducer }), {}, applyMiddleware(/*myLogger,*/ createLogger()));
 
 store.subscribe(() => {
     console.log("store updated!", store.getState())
 });
 
-store.dispatch({
-    type: "ADD",
-    payload: 100
-})
+// store.dispatch({
+//     type: "ADD",
+//     payload: 100
+// });
+
+// store.dispatch({
+//     type: "ADD",
+//     payload: 22
+// });
 
 store.dispatch({
-    type: "ADD",
-    payload: 22
-})
-
-store.dispatch({
-    type: "SUBTRACT",
+    type: "dsadsa",
     payload: 80
-})
+});
+
+// store.dispatch({
+//     type: "SET_AGE",
+//     payload: 30
+// });
